@@ -15,8 +15,16 @@ class FamilyTreeNode {
         this.firstChild = null; // initialize firstChild as null
     }
 
-    // method to add a child
+    // method to add a child with sibling name unique and not case sensitive
     public void addChild(String childName) {
+        // Check if childName already exists as a sibling
+        if (isSiblingExists(childName)) {
+            throw new IllegalArgumentException("Sibling with the same name already exists.");
+        }
+
+        // Convert childName to lowercase for case-insensitive comparison
+        String lowercaseChildName = childName.toLowerCase();
+
         // create a new child node
         FamilyTreeNode newChild = new FamilyTreeNode(childName);
         // if there are no existing children, set this child as the firstChild
@@ -26,11 +34,32 @@ class FamilyTreeNode {
             // else, traverse to the end of the sibling list and add the new child there
             FamilyTreeNode currentChild = this.firstChild;
             while (currentChild.nextSibling != null) {
+                // Convert current child's name to lowercase for comparison
+                String lowercaseCurrentChildName = currentChild.name.toLowerCase();
+                // Compare lowercase names
+                if (lowercaseCurrentChildName.equals(lowercaseChildName)) {
+                    throw new IllegalArgumentException("Sibling with the same name already exists.");
+                }
                 currentChild = currentChild.nextSibling;
             }
             currentChild.nextSibling = newChild;
         }
     }
+
+    // method to check if a sibling with the same name exists
+    private boolean isSiblingExists(String name) {
+        String lowercaseName = name.toLowerCase();
+        FamilyTreeNode currentChild = this.firstChild;
+        while (currentChild != null) {
+            String lowercaseCurrentChildName = currentChild.name.toLowerCase();
+            if (lowercaseCurrentChildName.equals(lowercaseName)) {
+                return true;
+            }
+            currentChild = currentChild.nextSibling;
+        }
+        return false;
+    }
+
 
 
     // method to convert the node to a string
