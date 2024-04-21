@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class FamilyTreeTest {
+
     private static Input input;
 
     public static void main(String[] args) {
@@ -33,22 +34,29 @@ public class FamilyTreeTest {
                 case 1:
                     // add a child
                     try {
+                        System.out.println("There's no partner for the ancestor. Please add a partner first.");
                         String childName = input.getString("Enter child's name: ");
                         ancestor.addChild(childName);
                     } catch (IllegalArgumentException e) {
                         System.out.println("Error: " + e.getMessage());
                     }
                     break;
+
                 case 2:
                     // add a partner
                     String partnerIdentifier = input.getString("Who's the family member whose partner is to be added: ");
                     FamilyTreeNode targetMember = findFamilyMember(ancestor, partnerIdentifier);
                     if (targetMember != null) {
-                        String partnerName = input.getString("Enter partner's name: ");
-                        targetMember.partner = new FamilyTreeNode(partnerName);
-                        targetMember.partner.partner = targetMember;
+                        try {
+                            String partnerName = input.getString("Enter partner's name: ");
+                            FamilyTreeNode partner = new FamilyTreeNode(partnerName);
+                            targetMember.addPartner(partner);
+                            System.out.println("Partner added successfully.");
+                        } catch (IllegalStateException e) {
+                            System.out.println("Error: " + e.getMessage());
+                        }
                     } else {
-                        System.out.println("Error: Invalid family member identifier.");
+                        System.out.println("Invalid family member identifier.");
                     }
                     break;
 

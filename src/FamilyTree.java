@@ -2,6 +2,8 @@
 // class to represent a node in the family tree
 class FamilyTreeNode {
     // attributes
+    private static int nextId = 1; // static variable to keep track of the next available ID
+    private int id; // unique identifier for the family member
     String name; // name of the family member
     FamilyTreeNode partner; // reference to the partner
     FamilyTreeNode nextSibling; // reference to the next sibling
@@ -13,8 +15,12 @@ class FamilyTreeNode {
         this.partner = null; // initialize partner as null
         this.nextSibling = null; // initialize nextSibling as null
         this.firstChild = null; // initialize firstChild as null
+        this.id = nextId++; // assign the next available ID and increment for the next node
     }
-
+    // getter for the ID
+    public int getId() {
+        return this.id;
+    }
     // method to add a child with sibling name unique and not case sensitive
     public void addChild(String childName) {
         // Check if childName already exists as a sibling
@@ -46,6 +52,17 @@ class FamilyTreeNode {
         }
     }
 
+    public void addPartner(FamilyTreeNode partner) {
+        if (this.partner != null) {
+            throw new IllegalStateException("This family member already has a partner.");
+        }
+        if (partner.partner != null) {
+            throw new IllegalStateException("The specified partner already has a partner.");
+        }
+        this.partner = partner;
+        partner.partner = this;
+    }
+
     // method to check if a sibling with the same name exists
     private boolean isSiblingExists(String name) {
         String lowercaseName = name.toLowerCase();
@@ -60,16 +77,43 @@ class FamilyTreeNode {
         return false;
     }
 
+    // method to find a specific family member by ID
+    private static FamilyTreeNode getFamilyMemberById(FamilyTreeNode node, int id) {
+        if (node == null) {
+            return null;
+        }
 
+        // check if current node matches the ID
+        if (node.getId() == id) {
+            return node;
+        }
 
+        // recursively search in children
+        FamilyTreeNode currentChild = node.firstChild;
+        while (currentChild != null) {
+            FamilyTreeNode result = getFamilyMemberById(currentChild, id);
+            if (result != null) {
+                return result;
+            }
+            currentChild = currentChild.nextSibling;
+        }
+
+        // not found
+        return null;
+    }
+    public FamilyTreeNode getPartner() {
+        return this.partner;
+    }
+    // method to convert the node to a string
     // method to convert the node to a string
     public String toString() {
-        String result = " "; // initialize result string
+        String result = this.name; // initialize result string with name
         // if there is a partner, add partner info to result
-        if (partner != null) {
-            result += partner.name + " partner " + name + "\n";
+        if (getPartner() != null) {
+            result += " partner " + getPartner().name + "\n";
+        } else {
+            result += "\n"; // if no partner, add new line
         }
-        result += "\n"; // add new line
         // if there are children, add their names to result
         if (firstChild != null) {
             FamilyTreeNode currentChild = firstChild;
@@ -80,4 +124,5 @@ class FamilyTreeNode {
         }
         return result; // return the result string
     }
+
 }
