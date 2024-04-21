@@ -35,7 +35,23 @@ public class FamilyTreeTest {
                     }
                     break;
                 case 2:
+                    // add a partner
+                    String partnerIdentifier = input.getString("Enter the identifier of the family member whose partner is to be added: ");
+                    if (partnerIdentifier.equalsIgnoreCase(ancestor.name)) {
+                        String partnerName = input.getString("Enter partner's name: ");
+                        ancestor.partner = new FamilyTreeNode(partnerName);
+                        ancestor.partner.partner = ancestor;
+                    } else if (partnerIdentifier.equalsIgnoreCase(ancestorPartner.name)) {
+                        String partnerName = input.getString("Enter partner's name: ");
+                        ancestorPartner.partner = new FamilyTreeNode(partnerName);
+                        ancestorPartner.partner.partner = ancestorPartner;
+                    } else {
+                        System.out.println("Error: Invalid family member identifier.");
+                    }
+                    break;
+                case 3:
                     // display family tree
+                    System.out.println("\nComplete Family Tree:");
                     System.out.println(ancestor.toString());
                     break;
                 default:
