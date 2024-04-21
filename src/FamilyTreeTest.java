@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class FamilyTreeTest {
     private static Input input;
 
@@ -6,8 +8,8 @@ public class FamilyTreeTest {
         input = new Input();
 
         // create ancestor and ancestor's partner nodes
-        FamilyTreeNode ancestor = new FamilyTreeNode("");
-        FamilyTreeNode ancestorPartner = new FamilyTreeNode("");
+        FamilyTreeNode ancestor = new FamilyTreeNode("Ancestor");
+        FamilyTreeNode ancestorPartner = new FamilyTreeNode("Ancestor Partner");
 
         // set up relationship between ancestor and partner
         ancestor.partner = ancestorPartner;
@@ -16,9 +18,12 @@ public class FamilyTreeTest {
         // main loop for menu
         while (true) {
             // display menu
-            System.out.println("Menu:");
+            System.out.println("\nMenu:");
             System.out.println("1 - Add a child");
-            System.out.println("2 - Display the family tree");
+            System.out.println("2 - Add a partner");
+            System.out.println("3 - Display the whole family");
+            System.out.println("4 - Display a specific family member");
+            System.out.println("5 - Quit");
 
             // get user choice
             int choice = input.getInteger("Choose an option: ");
@@ -36,28 +41,84 @@ public class FamilyTreeTest {
                     break;
                 case 2:
                     // add a partner
-                    String partnerIdentifier = input.getString("Enter the identifier of the family member whose partner is to be added: ");
-                    if (partnerIdentifier.equalsIgnoreCase(ancestor.name)) {
+                    String partnerIdentifier = input.getString("Who's the family member whose partner is to be added: ");
+                    FamilyTreeNode targetMember = findFamilyMember(ancestor, partnerIdentifier);
+                    if (targetMember != null) {
                         String partnerName = input.getString("Enter partner's name: ");
-                        ancestor.partner = new FamilyTreeNode(partnerName);
-                        ancestor.partner.partner = ancestor;
-                    } else if (partnerIdentifier.equalsIgnoreCase(ancestorPartner.name)) {
-                        String partnerName = input.getString("Enter partner's name: ");
-                        ancestorPartner.partner = new FamilyTreeNode(partnerName);
-                        ancestorPartner.partner.partner = ancestorPartner;
+                        targetMember.partner = new FamilyTreeNode(partnerName);
+                        targetMember.partner.partner = targetMember;
                     } else {
                         System.out.println("Error: Invalid family member identifier.");
                     }
                     break;
+
+
                 case 3:
-                    // display family tree
-                    System.out.println("\nComplete Family Tree:");
-                    System.out.println(ancestor.toString());
+                    // display the whole family
+                    System.out.println("\nWhole Family:");
+                    displayWholeFamily(ancestor);
                     break;
+                case 4:
+                    // display a specific family member
+                    String memberName = input.getString("Enter the name of the family member to display: ");
+                    FamilyTreeNode member = findFamilyMember(ancestor, memberName);
+                    if (member != null) {
+                        System.out.println("\nFamily Member Details:");
+                        System.out.println(member.toString());
+                    } else {
+                        System.out.println("Error: Family member not found.");
+                    }
+                    break;
+                case 5:
+                    // quit
+                    System.out.println("Exit");
+                    return;
                 default:
                     // invalid choice
                     System.out.println("Invalid choice.");
             }
         }
+    }
+
+    // method to display the whole family
+    private static void displayWholeFamily(FamilyTreeNode node) {
+        if (node == null) {
+            return;
+        }
+
+        // display current node
+        System.out.println(node.toString());
+
+        // recursively display children
+        FamilyTreeNode currentChild = node.firstChild;
+        while (currentChild != null) {
+            displayWholeFamily(currentChild);
+            currentChild = currentChild.nextSibling;
+        }
+    }
+
+    // method to find a specific family member
+    private static FamilyTreeNode findFamilyMember(FamilyTreeNode node, String name) {
+        if (node == null) {
+            return null;
+        }
+
+        // check if current node matches the name
+        if (node.name.equalsIgnoreCase(name)) {
+            return node;
+        }
+
+        // recursively search in children
+        FamilyTreeNode currentChild = node.firstChild;
+        while (currentChild != null) {
+            FamilyTreeNode result = findFamilyMember(currentChild, name);
+            if (result != null) {
+                return result;
+            }
+            currentChild = currentChild.nextSibling;
+        }
+
+        // not found
+        return null;
     }
 }
